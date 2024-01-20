@@ -39,14 +39,65 @@ class EZMeta(type, metaclass=EZMetaMeta):
   derived."""
 
   @staticmethod
-  def _initSubFactory() -> Callable:
+  def _getCommonTypes() -> list:
+    """Returns a list of common types"""
+    return [int, float, complex, str, bool, list, dict, set, ]
+
+  @staticmethod
+  def _getCommonTypeNames() -> dict:
+    """Returns a dictionary containing name, type pairs for common types,
+    where name is the value of __qualname__."""
+    types = EZMeta._getCommonTypes()
+    return {cls.__qualname__: cls for cls in types}
+
+  @staticmethod
+  def _getCommonDefaults() -> dict:
+    """Returns the default value of the given type or None, if type is not
+    a common type. """
+    base = {int: 0, float: 0.0, complex: 0j, str: '', bool: False, }
+    col = {list: [], dict: dict(), set: set(), }
+    out = base | col
+    named = {cls.__qualname__: val for (cls, val) in out.items()}
+    return out | named
+
+  @staticmethod
+  def _getDefaultInstance(type_: type | str) -> Any:
+    """Getter-function for the default instance of the given class. If the
+    class is a builtin, the value of that class that is Falsy is returned.
+    Otherwise, the class should define a default instance at the
+    __default_null__ attribute. Finally, an attempt is made to instantiate
+    the given class, by invoking its __new__ method."""
+    if isinstance(type_, str):
+      commonNamespace = EZMeta._getCommonTypeNames()
+      localNamespace = locals()
+      globalNamespace = globals()
+      baseNamespace = commonNamespace | localNamespace | globalNamespace
+      namedType = baseNamespace.get(type_, None)
+      if namedType is None:
+        raise NameError(type_)
+      if isinstance(namedType, type):
+        return EZMeta._getDefaultInstance(namedType)
+      raise TypeError(namedType)
+    if type_ in EZMeta._getCommonTypes():
+      commonDefaults = EZMeta._getCommonDefaults()
+      return commonDefaults.get(type_, )
+    if hasattr(type_, '__default_null__'):
+      return getattr(type_, '__default_null__', )
+    if isinstance(type_, type):
+      return type_()
+    raise TypeError
+
+  @staticmethod
+  def _initSubFactory(cls: type) -> Callable:
     """Why must this exist?"""
 
-    def func(cls: object = None, *args, **kwargs) -> None:
-      """Fine, I'll take those keyword arguments lmao!"""
-      return type.__init_subclass__()
+    oldInitSub = getattr(cls, '__init_subclass__', object.__init_subclass__)
 
-    return func
+    def newInitSub(*args, **kwargs) -> None:
+      """Fine, I'll take those keyword arguments lmao!"""
+      return oldInitSub(*args)
+
+    return newInitSub
 
   def _initFactory(cls) -> Callable:
     """Factory method creating the __init__ method for the derived
@@ -57,7 +108,17 @@ class EZMeta(type, metaclass=EZMetaMeta):
         e = """No field namespace were found!"""
         raise ValueError(e)
       fields = getattr(cls, '__field_namespace__', )
-      for (arg, (name, field)) in zip(args, fields.items()):
+      initVals = [*args, ]
+      for (i, (name, field)) in enumerate(fields.items()):
+        defVal = None
+        if i > len(initVals) - 1:
+          defVal = field.__default_value__
+          valType = field.__value_type__
+          if defVal is None:
+            defVal = cls._getDefaultInstance(valType)
+          initVals.append(defVal)
+
+      for (arg, (name, field)) in zip(initVals, fields.items()):
         field.__set__(self, arg)
 
     return __init__
@@ -91,13 +152,6 @@ class EZMeta(type, metaclass=EZMetaMeta):
               namespace: EZNamespace,
               **kwargs) -> type:
     """Implementation of class creation"""
-    # print(50 * '_')
-    # print('Entries for %s' % name)
-    # print('Bases: %s' % str(namespace.baseClasses))
-    # for entry in namespace.entryLog:
-    #   print(entry)
-    # print('END of entries for %s' % name)
-    # print(50 * '¨')
     fields = namespace.getFields()
     fieldsNamespace = dict()
     for (key, val) in fields.items():
@@ -113,7 +167,7 @@ class EZMeta(type, metaclass=EZMetaMeta):
     simpleNamespace = {**simpleNamespace, **{'__annotations__': varDict}}
     bases = namespace.baseClasses
     for base in bases:
-      setattr(base, '__init_subclass__', mcls._initSubFactory())
+      setattr(base, '__init_subclass__', mcls._initSubFactory(base))
     cls = type.__new__(mcls, name, (*bases,), simpleNamespace, **kwargs)
     initFunc = mcls._initFactory(cls)
     for (key, field) in fieldsNamespace.items():
@@ -121,7 +175,7 @@ class EZMeta(type, metaclass=EZMetaMeta):
     setattr(cls, '__initial_name_space__', namespace)
     setattr(cls, '__str__', strFunc)
     setattr(cls, '__init__', initFunc)
-    initSubclassFunc = mcls._initSubFactory()
+    initSubclassFunc = mcls._initSubFactory(cls)
     setattr(cls, '__init_subclass__', initSubclassFunc)
     return cls
 
@@ -133,28 +187,6 @@ class EZMeta(type, metaclass=EZMetaMeta):
   def __repr__(cls) -> str:
     """Returns the name of the class itself"""
     return cls.__qualname__
-
-  # def __call__(cls, *args, **kwargs) -> Any:
-  #   print(cls.__qualname__)
-  #   if len(args) == 1 and not kwargs:
-  #     if isinstance(args[0], type):
-  #       if cls.__qualname__ == 'EZData':
-  #         ic(cls)
-  #         ic(cls.__class__)
-  #         raise Exception
-  #         mcls = cls.__class__
-  #         other = args[0]
-  #         initSubclassFunc = mcls._initSubFactory()
-  #         setattr(other, '__init_subclass__', initSubclassFunc)
-  #         ic(other)
-  #         name = other.__name__
-  #         bases = []
-  #         for base in other.__bases__:
-  #           if base is not object:
-  #             setattr(base, '__init_subclass__', initSubclassFunc)
-  #             bases.append(base)
-  #         return mcls(name, (*bases,), EZNamespace(), )
-  #   return type.__call__(cls, *args, **kwargs)
 
 
 class EZData(metaclass=EZMeta):
