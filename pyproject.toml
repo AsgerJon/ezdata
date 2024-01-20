@@ -5,17 +5,21 @@ build-backend = 'setuptools.build_meta'
 
 [project]
 name = "ezdata"
-version = "0.0.01"
+version = "0.0.1"
 authors = [
-    { name = "Asger Jon Vistisen", email = "asgerjon2@gmail.com" },
+  { name = "Asger Jon Vistisen", email = "asgerjon2@gmail.com" },
 ]
 description = "A simple base class for dataclasses"
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+  "python>=3.8",
+  "icecream>=2.1.2",
 ]
 
 [project.urls]

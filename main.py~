@@ -1,14 +1,12 @@
 """Main Tester Script - This file is for development only"""
 #  MIT Licence
 #  Copyright (c) 2024 Asger Jon Vistisen
+
 from __future__ import annotations
 
 import os
 import string
 import sys
-here = os.path.dirname(os.path.abspath(__file__))
-there = os.path.join(here, 'src')
-sys.path.append(there)
 
 import worktoy
 from icecream import ic
