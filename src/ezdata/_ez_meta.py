@@ -191,3 +191,6 @@ class EZMeta(type, metaclass=EZMetaMeta):
 
 class EZData(metaclass=EZMeta):
   """In-between class exposing the functionality from the metaclass"""
+
+  def __init__(self, *args, **kwargs) -> None:
+    pass
