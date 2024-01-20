@@ -5,7 +5,7 @@ build-backend = 'setuptools.build_meta'
 
 [project]
 name = "ezdata"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
   { name = "Asger Jon Vistisen", email = "asgerjon2@gmail.com" },
 ]
@@ -18,7 +18,6 @@ classifiers = [
   "Operating System :: OS Independent",
 ]
 dependencies = [
-  "python>=3.8",
   "icecream>=2.1.2",
 ]
 
