@@ -25,7 +25,7 @@ class EZNamespace(AbstractNamespace):
   def _getCommonDefaults() -> dict[type, Any]:
     """Getter-function for default values of common types"""
     return {int : 0, float: 0, complex: 0j, str: '', list: [], set: set(),
-            dict: dict(), }
+            dict: dict(), type: object}
 
   @classmethod
   def _createDefaultInstance(cls, type_: type) -> Any:
