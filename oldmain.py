@@ -1,39 +1,7 @@
-"""Main Tester Script - This file is for development only"""
+"""Old main tester script"""
 #  MIT Licence
 #  Copyright (c) 2024 Asger Jon Vistisen
-
 from __future__ import annotations
-
-import os
-import string
-import sys
-
-import worktoy
-from icecream import ic
-from loremify import lorem
-
-from ezdata import EZMeta, EZData
-from utilities import monoSpace
-
-ic.configureOutput(includeContext=True)
-
-
-#
-#
-# class HelloWorld(metaclass=EZMeta):
-#   """Hello World!"""
-#   a: int = 1
-#   b: str = '2'
-#   c: complex
-#
-#   def __set_name__(self, cls: type, name: str) -> None:
-#     setattr(self, '__name__', name)
-
-
-def tester00() -> None:
-  """Hello World!"""
-  for item in [os, sys, 'hello world']:
-    print(item)
 
 
 def tester01() -> None:
@@ -136,7 +104,3 @@ def tester07() -> None:
   print(Q)
   R = SpacePoint()
   print(R)
-
-
-if __name__ == '__main__':
-  tester07()

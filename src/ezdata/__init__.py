@@ -4,7 +4,9 @@
 from __future__ import annotations
 
 #  Orphan imports
+from ._effort_error import EffortError
 from ._entry import Entry
+from ._ez_field import EZField
 
 #  Dependant imports
 from ._entry_log import EntryLog
