@@ -5,7 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/unittests" isTestSource="true" />
     </content>
-    <orderEntry type="jdk" jdkName="eztimerenv" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="devutils (2)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

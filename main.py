@@ -25,6 +25,13 @@ def tester00() -> None:
 
 def tester01() -> None:
   """LMAO"""
+  lol = object.__new__(object)
+  print(lol)
+  object.__init__(lol, )
+  print(lol)
+
+  print(type(lol))
+  print(type(type(lol)))
 
 
 def tester02() -> None:
@@ -37,4 +44,4 @@ def tester02() -> None:
 
 
 if __name__ == '__main__':
-  tester02()
+  tester01()
